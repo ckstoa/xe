@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon version="0.2">
+    <title xml:lang="ko">멤버모듈 후킹 애드온</title>
+    <description xml:lang="ko">
+        XE에서 통합 Member모듈의 정보를 이용 가능하도록..
+    </description>
+    <version>0.1</version>
+    <date>2015-05-25</date>
+
+    <author email_address="ckstoa@st-company.net" link="http://st-company.net/">
+        <name xml:lang="ko">류찬샘</name>
+    </author>
+    <extra_vars>
+		
+		<var name="login_hooking" type="select">
+			<title xml:lang="ko">멤버모듈 후킹</title>
+			<options value="">
+				<title xml:lang="ko">비활성화</title>
+			</options>
+			<options value="Y">
+				<title xml:lang="ko">활성화</title>
+			</options>
+		</var>
+
+    </extra_vars>
+</addon>

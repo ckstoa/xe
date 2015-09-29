@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon version="0.2">
+    <title>전체 공지 애드온</title>
+    <description>
+        특정 게시판의 공지글 (또는 글) 을 모든 게시판의 공지로 나타나게하는 전체공지 기능
+    </description>
+    <version>1.4</version>
+    <date>2015-02-03</date>
+    <author email_address="sejin7940@nate.com" link="http://sejin7940.co.kr/">
+        <name>sejin7940</name>
+    </author>
+    <link>http://sejin7940.co.kr</link>
+    <extra_vars>
+        <var name="notice_document_srl" type="text">
+            <title>공지처리 할 특정 글번호</title>
+            <description>하단 설정의 공지게시판과 무관하게 공지 처리하고픈 글 번호를 기재  (복수개시 콤마(,)로 구별해서 기재)</description>
+        </var>
+        <var name="notice_module_srl" type="text">
+            <title>공지 게시판 module_srl</title>
+            <description>기준이 되는 공지게시판의 module_srl 
+			( module_srl 은 관리자페이지->게시판 설정 클릭시 주소 끝부분에 변수 로 나옴)</description>
+        </var>
+        <var name="notice_category_srl" type="text">
+            <title>공지 게시판의 특정 category 기준시</title>
+            <description>기준 공지게시판에서 특정 분류의 글만 추출하고픈 경우 categroy_srl 기재. (값이 없으면 해당 게시판 전체)
+			( 게시판 목록 에서 특정 분류 선택 후, 주소를 보면 끝에 category 변수 숫자값을 기재)</description>
+        </var>
+        <var name="notice_target" type="select">
+            <title>공지 추출 대상</title>
+            <options value="notice">
+                <title>공지글만</title>
+            </options>
+            <options value="all">
+                <title>모든 글</title>
+            </options>
+            <description>공지게시판 글중 공지 글만 대상으로 할지, 모든 글을 대상으로 할지 선택</description>
+        </var>
+        <var name="notice_display" type="select">
+            <title>공지 추출 위치</title>
+            <options value="bottom">
+                <title>해당 게시판 공지를 위에, 전체공지를 아래에</title>
+            </options>
+            <options value="top">
+                <title>전체공지를 위에, 해당 게시판 공지를 아래에</title>
+            </options>
+			<description>단, 화재의 애드온이 실행시엔 무조건 전체공지가 아래에 나타남 (위로 올리고프면 애드온명을 고치거나, 화제의 애드온을 수정해야함)</description>
+        </var>
+        <var name="notice_list_count" type="text">
+            <title>최대 전체공지 목록 수</title>
+            <description>기재 안 하면 전체를 추출 ( 공지추출 대상을 공지글로만 하고, 전체 노출하는게 가장 이상적 )</description>
+        </var>
+        <var name="notice_sort_index" type="select">
+            <title>정렬 방법</title>
+            <options value="list_order">
+                <title>글 번호</title>
+            </options>
+            <options value="regdate">
+                <title>등록일</title>
+            </options>
+            <options value="last_update">
+                <title>최근 수정일</title>
+            </options>
+            <options value="title">
+                <title>제목순</title>
+            </options>
+            <options value="voted_count">
+                <title>추천수</title>
+            </options>
+            <options value="blamed_count">
+                <title>비추천수</title>
+            </options>
+            <options value="readed_count">
+                <title>조회수</title>
+            </options>
+            <options value="comment_count">
+                <title>댓글수</title>
+            </options>
+            <options value="nick_name">
+                <title>닉네임</title>
+            </options>
+            <options value="user_name">
+                <title>이름</title>
+            </options>
+            <options value="user_id">
+                <title>아이디</title>
+            </options>
+			<description>전체 공지들의 정렬 방법</description>
+        </var>
+        <var name="notice_order_type" type="select">
+            <title>정렬 순서</title>
+            <options value="asc">
+                <title>오름차순</title>
+            </options>
+            <options value="desc">
+                <title>내림차순</title>
+            </options>
+        </var>
+    </extra_vars>
+</addon>

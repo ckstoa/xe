@@ -1,0 +1,12 @@
+<query id="getAuthList" action="select">
+    <tables>
+        <table name="auth" />
+    </tables>
+    <columns>
+        <column name="*" />
+    </columns>
+    <conditions>
+        <condition operation="equal" column="user_id" var="s_user_id" pipe="and" />
+        <condition operation="equal" column="saleinfo_id" var="s_saleinfo_id" pipe="and" />
+    </conditions>
+</query>

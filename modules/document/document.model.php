@@ -1411,10 +1411,34 @@ class documentModel extends document
 					break;
 				default :
 					if(strpos($search_target,'extra_vars')!==false) {
+						
+						if($search_title = Context::get('search_title')){
+							$args->s_title = $search_title;
+							$use_division = true;
+						}
+						if($search_content = Context::get('search_content')){
+							$args->s_content = $search_content;
+							$use_division = true;
+						}
+						if($search_nick_name = Context::get('search_nick_name')){
+							$args->s_nick_name = $search_nick_name;
+						}
+						if($search_user_id = Context::get('search_user_id')){
+							$args->s_user_id = $search_user_id;
+						}
+						
+						if($search_answer_yn = Context::get('search_answer_yn')){
+							$args->var_2_eid = 'answer_yn';
+							$args->var_2_value = $search_answer_yn;
+							$query_id = 'document.getDocumentListWithExtraQnA';
+						}else{
+							$query_id = 'document.getDocumentListWithExtraVars';
+						}
+						
 						$args->var_idx = substr($search_target, strlen('extra_vars'));
-						$args->var_value = str_replace(' ','%',$search_keyword);
+						$args->var_value = $search_keyword;
 						$args->sort_index = 'documents.'.$args->sort_index;
-						$query_id = 'document.getDocumentListWithExtraVars';
+						
 					}
 					break;
 			}
