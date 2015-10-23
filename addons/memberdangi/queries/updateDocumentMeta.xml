@@ -1,0 +1,17 @@
+<query id="insertDocumentMeta" action="update">
+    <tables>
+        <table name="document_meta" />
+    </tables>
+    <columns>
+        <column name="priority" var="priority" filter="number" />
+        <column name="extra_category" var="extra_category" />
+        <column name="saleinfo_id" var="saleinfo_id" filter="number" />
+        <column name="teacher_id" var="teacher_id" filter="number" />
+        <column name="replied_yn" var="replied_yn" />
+        <column name="refund_category" var="refund_category" />
+        <column name="refund_year" var="refund_year" />
+    </columns>
+    <conditions>
+        <condition operation="equal" column="document_srl" var="document_srl" filter="number" notnull="notnull" />
+    </conditions>
+</query>

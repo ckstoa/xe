@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon version="0.2">
+    <title xml:lang="ko">외부 첨부파일 애드온</title>
+    <description xml:lang="ko">
+		첨부파일을 외부로 업로드 시키는 애드온입니다.
+    </description>
+    <version>0.0.3</version>
+    <date>2015-06-06</date>
+
+    <author email_address="xhpichan@gmail.com" link="http://www.luacast.io/">
+        <name xml:lang="ko">LuaCast</name>
+    </author>
+    <extra_vars>
+        <var name="upload">
+            <title xml:lang="ko">FTP서버</title>
+            <description xml:lang="ko">FTP 서버의 도메인 주소를 입력해 주세요. ( 예시 - ftp.swizard.cf )</description>
+     </var>
+	 <var name="upload_id">
+            <title xml:lang="ko">FTP 아이디</title>
+            <description xml:lang="ko">FTP 아이디를 입력해 주세요. ( 예시 - master )</description>
+     </var>
+	 <var name="upload_pw">
+            <title xml:lang="ko">FTP 비밀번호</title>
+            <description xml:lang="ko">FTP 비밀번호를 입력해 주세요. ( 예시 - password )</description>
+     </var>
+   <var name="upload_fol">
+            <title xml:lang="ko">FTP 경로</title>
+            <description xml:lang="ko">파일을 업로드할 FTP 경로를 입력해 주세요.( 예시 - public_html/upload )</description>
+     </var>
+  <var name="load">
+            <title xml:lang="ko">HTTP 경로</title>
+            <description xml:lang="ko">업로드된 파일에 접근할 수 있는 HTTP 경로를 입력해 주세요.(예시 - http://www.swizard.cf/upload )</description>
+     </var>
+	 </extra_vars>
+</addon>

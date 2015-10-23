@@ -1409,7 +1409,52 @@ class documentModel extends document
 					$args->var_value = str_replace(' ', '%', $search_keyword);
 					$query_id = 'document.getDocumentListWithinExtraVars';
 					break;
+				case 'extra_meta':
+						
+						$query_id = 'document.getDocumentListWithExtraMeta';
+
+						if($search_title = Context::get('search_title')){
+							$args->s_title = $search_title;
+							$use_division = true;
+						}
+						if($search_content = Context::get('search_content')){
+							$args->s_content = $search_content;
+							$use_division = true;
+						}
+						if($search_nick_name = Context::get('search_nick_name')){
+							$args->s_nick_name = $search_nick_name;
+						}
+						if($search_user_id = Context::get('search_user_id')){
+							$args->s_user_id = $search_user_id;
+						}
+						if($search_extra_category = Context::get('search_extra_category')){
+							$args->extra_category = $search_extra_category;
+						}
+						if($search_priority = Context::get('search_priority')){
+							$args->priority = $search_priority;
+						}
+						if($search_answer_yn = Context::get('search_answer_yn')){
+							$args->replied_yn = $search_answer_yn;
+						}
+						if($search_teacher_id = Context::get('search_teacher_id')){
+							$args->teacher_id = $search_teacher_id;
+						}
+						if($search_saleinfo_id = Context::get('search_saleinfo_id')){
+							$args->saleinfo_id = $search_saleinfo_id;
+						}
+						if($search_refund_category = Context::get('search_refund_category')){
+							$args->refund_category = $search_refund_category;
+						}
+						if($search_refund_year = Context::get('search_refund_year')){
+							$args->refund_year = $search_refund_year;
+						}
+						
+						$args->sort_index = 'documents.'.$args->sort_index;
+						
+
+					break;
 				default :
+					default :
 					if(strpos($search_target,'extra_vars')!==false) {
 						
 						if($search_title = Context::get('search_title')){
@@ -1439,7 +1484,7 @@ class documentModel extends document
 						$args->var_value = $search_keyword;
 						$args->sort_index = 'documents.'.$args->sort_index;
 						
-					}
+						}
 					break;
 			}
 		}

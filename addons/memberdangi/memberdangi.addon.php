@@ -1,7 +1,7 @@
 <?php
 if(!defined("__ZBXE__")) exit();
 
-	if( $called_position == 'before_module_init' && $this->act == 'dispMemberSignUpForm' && $this->act =='dispMemberFindAccount' && Context::get('angular') != TRUE ){		
+	if( $called_position == 'before_module_init' &&( $this->act == 'dispMemberSignUpForm' || $this->act =='dispMemberFindAccount') && Context::get('angular') != TRUE ){		
 		exit();		
 	}
 		
@@ -36,7 +36,7 @@ if(!defined("__ZBXE__")) exit();
 
 				
 			}
-			if(!$log_value->result->info->no){
+			if(!$log_value->result->info->id){
 				$data = array(
 				'ST' => $_COOKIE["ST"]
 				);
@@ -55,16 +55,16 @@ if(!defined("__ZBXE__")) exit();
 			}
 
 
-		   if($log_value->result->info->no){
+		   if($log_value->result->info->id){
 				$oMemberModel = getModel('member');
 
-				$memInfo = $oMemberModel->getMemberInfoByMemberSrl($log_value->result->info->no);
+				$memInfo = $oMemberModel->getMemberInfoByUserID($log_value->result->info->id);
 				
 				
 			
 				$_SESSION['is_logged'] = true;
 				$_SESSION['ipaddress'] = $_SERVER['REMOTE_ADDR'];
-				$_SESSION['member_srl'] = $log_value->result->info->no;			
+				$_SESSION['member_srl'] = $memInfo->member_srl;			
 				setcookie('xe_logged', 'true', 0, '/');
 				// Do not save your password in the session jiwojum;;
 				//unset($this->memberInfo->password);
@@ -151,7 +151,7 @@ if(!defined("__ZBXE__")) exit();
 				foreach ($output_notice->data as $key => $value) {
 					if(strtotime(date('Y-m-d')) >= strtotime($value->open_time) && strtotime(date('Y-m-d')) <= strtotime($value->close_time)  ){
 						$mode[$key] = 'edit';
-					}else if(strtotime(date('Y-m-d')) <= strtotime($value->close_time + 604800 )  ){
+					}else if(strtotime(date('Y-m-d')) <= (strtotime($value->close_time) + 604800)   ){
 						$mode[$key] = 'view';
 					}else{
 						$mode[$key] = 'end';
@@ -160,8 +160,10 @@ if(!defined("__ZBXE__")) exit();
 			}
 				
 			if(in_array('edit', $mode)){
-					
-			}else if(in_array('view', $mode) && in_array($this->act, array('procBoardInsertComment','InsertDocument','DeleteDocument','DeleteComment','procFileUpload')) ){
+
+			}else if(in_array('view', $mode) && !in_array($this->act, array('procBoardInsertComment','InsertDocument','DeleteDocument','DeleteComment','procFileUpload')) ){
+
+			}else if(in_array($this->act, array('procBoardInsertComment','InsertDocument','DeleteDocument','DeleteComment','procFileUpload'))){
 				header('Content-Type: application/json; charset=utf-8');
 				echo json_encode(array('error'=>'-2','message'=>'반별게시판 쓰기권한없음'));
 				exit();
@@ -244,18 +246,65 @@ if(!defined("__ZBXE__")) exit();
 					$list_arr[$key]->variables['comment_count']['comment_lists'][$value2->variables['comment_srl']]['regdate'] =  date('Y-m-d H:i:s', strtotime($value2->variables['regdate']));
 					$list_arr[$key]->variables['comment_count']['comment_lists'][$value2->variables['comment_srl']]['last_update'] =  date('Y-m-d H:i:s', strtotime($value2->variables['last_update']));
 				} 
-			}
-			
-			
+			}	
 		}
 		$this->add('mid', Context::get('mid'));
 		
 		Context::set($list_data,$list_arr);
 		
+	}else if( ($this->act == 'dispBoardContentList' || $this->act == 'dispBoardNoticeList' ) && $called_position == 'after_module_proc'  ){
+		
+		if($this->act == 'dispBoardContentList'){
+			$list_data = 'document_list';
+		}else if($this->act == 'dispBoardNoticeList'){
+			$list_data = 'notice_list';
+		}	
+		
+		$list_arr = Context::get($list_data);
+		$oDocumentModel = getModel('document');
+		$oMember = getModel('member');
+		
 
+
+		foreach ($list_arr as $key => $value) {
+			$document_srl = $value->document_srl;
+			$member_srl = $value->variables['member_srl'];
+			$oDocument = $oDocumentModel->getDocument($document_srl);
+			$groupimg = $oMember->getGroupImageMark($member_srl);
+			if($groupimg)$list_arr[$key]->variables['user_name']='<img src="http://'.BBS_HOST.$groupimg->src.'">';
+			
+			$file_list = $oDocument->getUploadedFiles();
+			
+			if($file_list){
+				foreach ($file_list as $key3 => $value3) {
+					$file_list[$key3]->download_url = htmlspecialchars_decode($value3->download_url);
+				}
+			}else{
+				$file_list = array();
+			}
+
+			$extra_arr = array(
+				'file_list' => $file_list,
+				'saleinfo_id' => $value->variables['saleinfo_id'],
+				'teacher_id' => $value->variables['teacher_id'],
+				'answer_yn' => $value->variables['replied_yn'],
+				'priority' => $value->variables['priority'],
+				'extra_category' => $value->variables['extra_category'],
+				'refund_category' => $value->variables['refund_category'],
+				'refund_year' => $value->variables['refund_year'],
+			);
+			
+			$list_arr[$key]->variables['extra_vars'] = $extra_arr;
+		}
+		$this->add('mid', Context::get('mid'));
+		
+		Context::set($list_data,$list_arr);
+		
 	}
 
-	
+	if($this->act == 'dispBoardContentList' && $called_position == 'before_module_proc'){
+		$this->columnList = array();
+	}
 	
 	
 	
@@ -308,6 +357,35 @@ if(!defined("__ZBXE__")) exit();
 		
 		
 	}
+
+	if( $called_position == 'after_module_proc' && $this->act == 'procBoardInsertDocument'   ){
+
+		$args->document_srl = $this->get('document_srl');
+		$args->priority = Context::get('priority');
+		$args->extra_category = Context::get('extra_category');
+		$args->saleinfo_id = Context::get('saleinfo_id');
+		$args->teacher_id = Context::get('teacher_id');
+		$args->replied_yn = Context::get('replied_yn');
+		$args->refund_category = Context::get('refund_category');
+		$args->refund_year = Context::get('refund_year');
+
+		$args_Document->document_srl = $this->get('document_srl');
+		if($args_Document->document_srl){
+
+			$output_notice = executeQueryArray('addons.memberdangi.getDocumentMeta', $args_Document);
+
+			if($output_notice->data){
+				 executeQuery('addons.memberdangi.updateDocumentMeta', $args) ;
+			}else{
+				 executeQuery('addons.memberdangi.insertDocumentMeta', $args) ;
+			}
+
+		}
+
+		
+		
+	}
+
 	
 	
 	
@@ -353,7 +431,91 @@ if(!defined("__ZBXE__")) exit();
 		executeQuery('addons.memberdangi.updateReadedCount', $args);
 	
 	}
+
+
+	if($called_position == 'after_module_proc' && $this->act=='dispBoardContentView' ) {
+
+		$document_srl = Context::get('document_srl');
+		
+		$args_Document->document_srl = $document_srl;
+
+		$output_notice = executeQueryArray('addons.memberdangi.getDocumentMeta', $args_Document);
+
+		$extra_arr = array(
+			'saleinfo_id' => $output_notice->data[0]->saleinfo_id,
+			'teacher_id' => $output_notice->data[0]->teacher_id,
+			'answer_yn' => $output_notice->data[0]->replied_yn,
+			'priority' => $output_notice->data[0]->priority,
+			'extra_category' => $output_notice->data[0]->extra_category,
+			'refund_category' => $output_notice->data[0]->refund_category,
+			'refund_year' => $output_notice->data[0]->refund_year,
+		);
+
+		$this->add('extra_vars',$extra_arr);
+
 	
+	}
+	
+
+	
+
+
+	if($called_position == 'before_module_proc' && $this->act=='procBoardDeleteDocument' && Context::get('document_srl'))	{
+		$document_srl = Context::get('document_srl');
+			
+		if($document_srl)
+		{
+			// triggerDeleteDocumentComments 가 실행되어 댓글이 삭제되어 복원 안 되는 현상 막기 위해
+			Context::set('trash_delete','Y');  
+			/*
+			modules/comment/comment.controller.php 에서
+			function triggerDeleteDocumentComments(&$obj) 함수 를 아래 문구로 둘러 쌈
+					if(Context::get('trash_delete')!='Y') { ~~~~ }
+			*/
+  	
+			$args->description = '휴지통으로 이동처리';
+
+			$args->document_srl = $document_srl;	
+			
+			$oDocumentModel = getModel('document');
+			$oDocument = $oDocumentModel->getDocument($document_srl);
+			$comment_list = $oDocument->getComments();
+			if(count($comment_list)){
+				$oCommentController = &getController('comment');
+				$oCommentAdminController = &getAdminController('comment');
+
+				$comment_srl_list = array();
+
+				foreach ($comment_list as $key => $value) {
+					$comment_srl_list[] = $key;
+				}
+
+				$oCommentAdminController->_moveCommentToTrash($comment_srl_list, $oCommentController, $oDB);
+			}
+			$oDocumentController = &getController('document');			
+			$oDocumentController->moveDocumentToTrash($args);	
+
+
+		}
+	}
+
+	if($called_position == 'before_module_proc' && $this->act=='procBoardDeleteComment' && Context::get('comment_srl'))	{		
+		$comment_srl = Context::get('comment_srl');
+		
+		if($comment_srl)
+		{		
+			$oCommentController = &getController('comment');
+			$oCommentAdminController = &getAdminController('comment');
+						
+			$oDB = &DB::getInstance();
+			$oDB->begin();
+			$comment_srl_list[0] = $comment_srl;
+			$oCommentAdminController->_moveCommentToTrash($comment_srl_list, $oCommentController, $oDB);
+			$oDB->commit();
+
+
+		}
+	}
 	
 	
 

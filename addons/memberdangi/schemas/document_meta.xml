@@ -1,0 +1,8 @@
+<table name="document_meta">
+    <column name="document_srl" type="number" size="11" notnull="notnull" primary_key="primary_key" />
+    <column name="priority" type="number" size="2"  />
+    <column name="saleinfo_id" type="number" size="11"  />
+    <column name="teacher_id" type="number" size="11"  />
+    <column name="replied_yn" type="varchar" size="1"  />
+    <column name="reg_date" type="date" size="1"  />
+</table>
